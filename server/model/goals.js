@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const taskSchema = new Schema({
   // Define other task fields here
   name: { type: String, required: true },
-  priority: String,
+  priority: { type: String, default: "medium" },
 });
 
 const goalSchema = Schema(

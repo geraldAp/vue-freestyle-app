@@ -14,7 +14,7 @@ const getGoal = async (req, res) => {
     const { id: _id } = req.params;
     const goal = await Goal.findOne({ _id });
     if (!goal) {
-      return res.status(204).json({ message: `no goal found` });
+     res.status(204).json({ message: `no goal found` });
     }
     res.status(201).json(goal);
   } catch (error) {
@@ -25,7 +25,7 @@ const createGoal = async (req, res) => {
   try {
     const { name, priority } = req.body;
     if (!name || !priority) {
-      return res.status(400).json({ message: "All fields are required" });
+     res.status(400).json({ message: "All fields are required" });
     }
     const goal = await Goal.create({
       name,
@@ -40,12 +40,12 @@ const updateGoal = async (req, res) => {
   try {
     const { id: _id } = req.params;
     if (!_id) {
-      return res.status(400).json({ message: "kindly provide an id " });
+    res.status(400).json({ message: "kindly provide an id " });
     }
     const goal = await Goal.findOne({ _id });
     const { name, priority } = req.body;
     if (!goal) {
-      return res
+      res
         .status(400)
         .json({ message: `no goal with id ${req.body.id}` });
     }
