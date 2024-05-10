@@ -41,10 +41,11 @@ const createTask = async (req, res) => {
     }
     tasks.push(newTask);
     await goal.save();
+    res.status(200).json(tasks);
   } catch (error) {}
 };
 const deleteTask = async (req, res) => {
-  const { goalId, taskId } = req.params;
+  const { id: goalId, taskId } = req.params;
   try {
     if (!goalId) {
       return res.status(400).json({ message: "Invalid goal id " });
@@ -54,14 +55,15 @@ const deleteTask = async (req, res) => {
     }
     const goal = await Goal.findById(goalId);
     const task = goal.tasks.id(taskId);
-    task.remove();
+    task.deleteOne();
     await goal.save();
+    res.status(200).json({ message: "task has been deleted" });
   } catch (error) {
     console.error(error);
   }
 };
 const updateTask = async (req, res) => {
-  const { goalId, taskId } = req.params;
+  const { id: goalId, taskId } = req.params;
   const { name: taskName, priority } = req.body;
   try {
     if (!goalId) {
@@ -79,6 +81,7 @@ const updateTask = async (req, res) => {
       task.priority = priority;
     }
     await goal.save();
+    res.status(200).json([{ message: "Updated Successfully" }, task]);
   } catch (error) {
     console.error(error);
   }

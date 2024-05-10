@@ -31,7 +31,7 @@ const createGoal = async (req, res) => {
       name,
       priority,
     });
-    res.status(goal);
+    res.status(200).json(goal);
   } catch (error) {
     console.error(error);
   }
