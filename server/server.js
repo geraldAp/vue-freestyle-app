@@ -5,6 +5,7 @@ const dbConnect = require("./configs/dbConnect");
 const errorHandler = require("./middleware/errorHandler");
 const notFoundHandler = require("./middleware/notFoundHandler");
 const logger = require("./middleware/logger");
+const authMiddleWare = require("./middleware/verifyJwt");
 const authRoutes = require("./routes/authRoute");
 const goalRoutes = require("./routes/goalsRoute");
 const app = express();
@@ -22,6 +23,7 @@ app.use(logger);
 
 // routes
 app.use("/api/v1/auth", authRoutes);
+app.use(authMiddleWare);
 app.use("/api/v1/goals", goalRoutes);
 
 app.use(notFoundHandler);
