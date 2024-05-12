@@ -5,6 +5,7 @@ const {
   getGoal,
   updateGoal,
   deleteGoal,
+  deleteAllGoals,
 } = require("../controller/goalController");
 const {
   getAllTasks,

@@ -18,6 +18,10 @@ const goalSchema = Schema(
       required: true,
     },
     tasks: [taskSchema],
+    userId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
