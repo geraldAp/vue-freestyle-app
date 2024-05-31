@@ -5,6 +5,7 @@ const taskSchema = new Schema({
   // Define other task fields here
   name: { type: String, required: true },
   priority: { type: String, default: "medium" },
+  completed: { type: Boolean, default: false },
 });
 
 const goalSchema = Schema(
@@ -13,15 +14,24 @@ const goalSchema = Schema(
       type: String,
       required: true,
     },
-    priority: {
+    miniDescription: {
       type: String,
       required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    priority: {
+      type: String,
+      required: { type: String, default: "medium" },
     },
     tasks: [taskSchema],
     userId: {
       type: String,
       required: true,
     },
+    isComplete: { type: Boolean, default: false },
   },
   {
     timestamps: true,

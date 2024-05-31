@@ -64,7 +64,7 @@ const deleteTask = async (req, res) => {
 };
 const updateTask = async (req, res) => {
   const { id: goalId, taskId } = req.params;
-  const { name: taskName, priority } = req.body;
+  const { name: taskName, priority, completed } = req.body;
   try {
     if (!goalId) {
       return res.status(400).json({ message: "Invalid goal id " });
@@ -73,6 +73,9 @@ const updateTask = async (req, res) => {
       return res.status(400).json({ message: "task not found " });
     }
     const goal = await Goal.findById(goalId);
+    if (!goal) {
+      return res.status(404).json({ message: `No goal found with id ${goalId}` });
+    }
     const task = goal.tasks.id(taskId);
     if (taskName) {
       task.name = taskName;
@@ -80,11 +83,18 @@ const updateTask = async (req, res) => {
     if (priority) {
       task.priority = priority;
     }
+    if (typeof completed !== 'undefined') {
+      task.completed = completed;
+      if(completed === false ){
+        goal.isCompleted = false
+      }
+    }
     await goal.save();
     res.status(200).json([{ message: "Updated Successfully" }, task]);
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ message: "An error occurred while updating the task", error: error.message })
   }
 };
+
 
 module.exports = { getAllTasks, createTask, deleteTask, updateTask };

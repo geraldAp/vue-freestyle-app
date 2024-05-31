@@ -12,7 +12,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['toggle-complete', 'edit-todo', 'update-todo', 'delete-todo'])
-
 const toggleTodoEdit = () => {
     emit('edit-todo', props.index)
 }
