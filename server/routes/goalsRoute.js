@@ -12,7 +12,6 @@ const {
   createTask,
   deleteTask,
   updateTask,
-  setTaskCompletion
 } = require("../controller/tasksController");
 const authMiddleWare = require("../middleware/verifyJwt");
 
@@ -25,9 +24,10 @@ router.use(authMiddleWare);
 router.route("/").get(getAllGoals).post(createGoal);
 router.route("/:id").get(getGoal).put(updateGoal).delete(deleteGoal);
 // If deleteAllGoals is needed, add the route below
-// router.route("/goals").delete(deleteAllGoals);
+router.route("/").delete(deleteAllGoals);
 
 // Task routes
 router.route("/:id/tasks").get(getAllTasks).post(createTask);
-router.route("/:id/tasks/:taskId").delete(deleteTask).put(updateTask);
+router.delete("/:id/task",deleteTask)
+router.put("/:id/task/:goalId",updateTask);
 module.exports = router;

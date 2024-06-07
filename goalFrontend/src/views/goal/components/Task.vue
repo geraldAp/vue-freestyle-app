@@ -3,8 +3,8 @@ import { ref, watch } from 'vue';
 import { CircleCheck, Pencil, Trash2 } from 'lucide-vue-next';
 import EditTaskForm from './EditTaskForm.vue';
 import { useQueryClient, useMutation } from '@tanstack/vue-query';
-import { useAuthStore } from '@/stores/counter';
-import { editTask, deleteTask } from '@/utils/actions';
+import { useAuthStore, useCompletionStore } from '@/stores/counter';
+import { editTask, deleteTask, updateGoal } from '@/utils/actions';
 
 interface Props {
     task: {
@@ -15,26 +15,19 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
 const complete = ref(props.task.completed);
 const isEditing = ref(false);
 const authStore = useAuthStore();
+const completionState = useCompletionStore()
 const queryClient = useQueryClient();
 const goalId = authStore.goalId;
-
-interface TaskType {
-    _id: string;
-    name: string;
-    completed: boolean;
-}
+const taskId = props.task._id
 
 const editMutation = useMutation({
     mutationFn: editTask,
     onSuccess: (data) => {
-        queryClient.setQueryData(['Tasks', goalId], (oldData: TaskType[]) => {
-            if (!oldData) return [];
-            return oldData.map(task => task._id === props.task._id ? data : task);
-        });
+        queryClient.setQueryData(['task', { _id: taskId }], data)
+        queryClient.invalidateQueries({ queryKey: ['tasks'] })
         console.log('Success');
     },
     onError: () => {
@@ -42,11 +35,17 @@ const editMutation = useMutation({
     },
 });
 
+const goalCompleteMutation = useMutation({
+    mutationFn: updateGoal,
+    onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ['goal', { id: goalId }] })
+    },
+});
+
 const deleteMutation = useMutation({
     mutationFn: deleteTask,
     onSuccess: (data) => {
-        console.log(data);
-        queryClient.invalidateQueries({ queryKey: ['Tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
     onError: () => {
         console.error('did not delete');
@@ -54,11 +53,11 @@ const deleteMutation = useMutation({
 });
 
 const editTaskHandler = (task: string) => {
-    editMutation.mutate({ goalId, task:{name:task}, taskId: props.task._id });
+    editMutation.mutate({ goalId, task: { name: task }, taskId: props.task._id });
 };
 
 const deleteTaskHandler = () => {
-    deleteMutation.mutate({ goalId, taskId: props.task._id });
+    deleteMutation.mutate(taskId);
 };
 
 const setIsEditing = () => {
@@ -66,7 +65,12 @@ const setIsEditing = () => {
 };
 
 const setCompleted = () => {
-    complete.value = !complete.value;
+    const newValue = !complete.value
+    complete.value = newValue;
+    if (newValue === false) {
+        completionState.setGoalCompletion(newValue)
+        goalCompleteMutation.mutate({ id: goalId, data: { isComplete: newValue } });
+    }
     // Optionally, you can call an API to persist this change
     editMutation.mutate({ goalId, task: { ...props.task, completed: complete.value }, taskId: props.task._id });
 };
@@ -92,8 +96,9 @@ watch(
             <div>
                 <span :class="{ 'text-blue-500 line-through': complete }">{{ props.task.name }}</span>
             </div>
-            <div class="flex gap-2 items opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 duration-300">
-                <CircleCheck @click="setCompleted"  :class="{ 'text-blue-500': complete }" />
+            <div
+                class="flex gap-2 items opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 duration-300">
+                <CircleCheck @click="setCompleted" :class="{ 'text-blue-500': complete }" />
                 <Pencil @click="setIsEditing" class="text-blue-500" />
                 <Trash2 @click="deleteTaskHandler" class="text-red-500" />
             </div>

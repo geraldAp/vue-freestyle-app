@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { refreshAccessToken } from "./actions";
-
+import { useAuthStore } from "@/stores/counter";
 export const verifyAndRefreshAccessToken = async (
   accessToken: string | null
 ): Promise<string> => {
@@ -24,7 +24,8 @@ export const verifyAndRefreshAccessToken = async (
     throw new Error("Invalid access token");
   }
 
-  const refreshToken = localStorage.getItem("refresh");
+  const refreshToken = localStorage.getItem("refresh") as string;
+  console.log('The refresh token we are trying to get : ', refreshToken)
   if (!refreshToken) {
     throw new Error("Refresh token not found");
   }
@@ -32,9 +33,9 @@ export const verifyAndRefreshAccessToken = async (
   try {
     console.log('Refreshing access token')
     const refreshedAccessToken = await refreshAccessToken(
-      JSON.parse(refreshToken)
+      refreshToken
     );
-    localStorage.setItem("access", JSON.stringify(refreshedAccessToken));
+    localStorage.setItem("access", refreshedAccessToken);
     console.log("Returning Refreshed access token :", refreshAccessToken);
     return refreshedAccessToken;
   } catch (error) {

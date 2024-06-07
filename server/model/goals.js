@@ -1,12 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const taskSchema = new Schema({
-  // Define other task fields here
-  name: { type: String, required: true },
-  priority: { type: String, default: "medium" },
-  completed: { type: Boolean, default: false },
-});
 
 const goalSchema = Schema(
   {
@@ -26,7 +20,6 @@ const goalSchema = Schema(
       type: String,
       required: { type: String, default: "medium" },
     },
-    tasks: [taskSchema],
     userId: {
       type: String,
       required: true,

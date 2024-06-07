@@ -6,13 +6,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { getGoal } from '@/utils/getters';
 import { deleteGoal, updateGoal } from '@/utils/actions';
 import GoalTasks from './components/Goaltasks.vue';
-import { computed, ref, watch, watchEffect } from 'vue';
-import { useAuthStore, useCompletionStore } from '@/stores/counter';
+import { ref, watch } from 'vue';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const completionState = useCompletionStore()
 const queryClient = useQueryClient();
 const goBack = () => {
   router.go(-1); // Navigate back to the previous page
@@ -28,25 +26,17 @@ const { data: goal, error, isLoading, isError } = useQuery({
 });
 
 const isCompleted = ref(false);
-
-
 watch(
   () => goal.value,
   (newGoal) => {
     if (newGoal === null || newGoal === undefined) {
-      completionState.setGoalCompletion(true) 
+      isCompleted.value = true; // Reset isCompleted to false if newGoal is null or undefined
     } else {
-      if(newGoal.isComplete){
-        queryClient.invalidateQueries({ queryKey: ['tasks'] })
-      }
-      completionState.setGoalCompletion(newGoal.isComplete!)
+      isCompleted.value = newGoal.isComplete!;
     }
   },
   { immediate: true }
 );
-
-
-
 console.log('goal completion value', isCompleted.value);
 
 const deleteMutation = useMutation({
@@ -64,7 +54,6 @@ const completionMutation = useMutation({
   mutationFn: updateGoal,
   onSuccess: (data) => {
     queryClient.setQueryData(['goal', { id }], data);
-    queryClient.invalidateQueries({ queryKey: ['goal', { id }] })
     console.log('Success');
   },
 });
@@ -73,14 +62,14 @@ const deleteGoalHandler = () => {
   console.log('mutating delete');
   deleteMutation.mutate(route.params.id as string);
 };
-const markCompletion = () => {
-  const newCompleteValue = !completionState.goalComplete
-  // Toggle the isCompleted value
-  completionState.setGoalCompletion(newCompleteValue)
-  // Send the mutation with the updated value
-  completionMutation.mutate({ id, data: { isComplete: newCompleteValue } });
-};
 
+const markCompletion = () => {
+  console.log('goal completion value 2', isCompleted.value);
+  // Toggle the isCompleted value
+  isCompleted.value = !isCompleted.value;
+  // Send the mutation with the updated value
+  completionMutation.mutate({ id, data: { isComplete: isCompleted.value } });
+};
 </script>
 
 <template>
@@ -103,12 +92,11 @@ const markCompletion = () => {
       </p>
     </section>
     <section class="my-5 h-[65vh]">
-      <h2 v-if="isLoading">Loading......</h2>
-      <GoalTasks v-else  :tasks="goal?.tasks!" />
+      <GoalTasks :tasks="goal?.tasks!" />
     </section>
     <div class="flex justify-end">
       <button @click="markCompletion" class="bg-neutral-100 text-neutral-600 rounded-full px-3 py-1"
-        :class="{ 'hidden': completionState.goalComplete }">
+        :class="{ 'hidden': isCompleted }">
         Mark as completed
       </button>
     </div>

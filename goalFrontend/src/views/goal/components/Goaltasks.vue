@@ -1,16 +1,36 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/counter';
-import { useQuery, useMutation } from '@tanstack/vue-query';
-import { geTasks } from '@/utils/getters';
+import { computed, watch, watchEffect } from 'vue';
+import { useAuthStore, useCompletionStore } from '@/stores/counter';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import Task from './Task.vue';
 import TaskCreator from './Tasks/TaskCreator.vue';
-const authStore = useAuthStore()
-const gaolId = authStore.goalId
+import { getTasks } from '@/utils/getters';
 
-const { data: tasks, isPending, isError } = useQuery({
-  queryKey: ['Tasks'],
-  queryFn: () => geTasks(gaolId),
-})
+
+const authStore = useAuthStore();
+const queryClient = useQueryClient();
+const completionState = useCompletionStore()
+const goalId = authStore.goalId;
+
+
+
+const { data, error, isLoading, isError } = useQuery({
+  queryKey: ['tasks'],
+  queryFn: () => getTasks(goalId),
+  enabled: !!goalId, // Only run  if the ID exists
+});
+
+const allTasksCompleted = computed(() => data?.value?.every(task => task.completed) ?? false);
+watch(
+  () => data,
+  (newTasks) => {
+    if (newTasks) {
+      completionState.setGoalCompletion(allTasksCompleted.value);
+    }
+  },
+  { immediate: true, deep: true }
+);
+
 
 
 </script>
@@ -21,10 +41,9 @@ const { data: tasks, isPending, isError } = useQuery({
       <TaskCreator />
     </div>
     <ul class="flex flex-col gap-3">
-      <Task v-for="(task, index) in tasks" :key="task._id" :task />
+      <Task v-for="(task, index) in data" :key="task._id" :task="task" />
     </ul>
   </div>
 </template>
-
 
 <style scoped></style>

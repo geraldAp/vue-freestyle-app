@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 const emit = defineEmits([
-    'task-creator'
+    'task-creator' , 'close-form'
 ])
 
 const formSchema = toTypedSchema(z.object({
@@ -31,6 +31,7 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit((values) => {
     emit('task-creator', values.task)
+    // emit('close-form')
 })
 </script>
 

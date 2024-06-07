@@ -1,23 +1,16 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-
-export const useCounterStore = defineStore("counter", () => {
-  const count = ref(0);
-  const doubleCount = computed(() => count.value * 2);
-  function increment() {
-    count.value++;
-  }
-
-  return { count, doubleCount, increment };
-});
+import { verifyAndRefreshAccessToken } from "@/utils/helpers";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     userId: "" as string,
     goalId: "" as string,
-    token: "" as string,
+    token: localStorage.getItem("access") as string || "" as string,
   }),
-
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+  },
   actions: {
     setUserId(id: string) {
       this.userId = id;
@@ -28,5 +21,31 @@ export const useAuthStore = defineStore("auth", {
     setToken(token: string) {
       this.token = token;
     },
+    clearAuth() {
+      this.userId = "";
+      this.goalId = "";
+      this.token = "";
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+    },
+    async verifyAndRefreshToken() {
+      try {
+        if (this.token) {
+          const validToken = await verifyAndRefreshAccessToken(this.token);
+          this.setToken(validToken);
+        }
+      } catch (error) {
+        this.clearAuth();
+        throw error;
+      }
+    },
   },
+});
+
+export const useCompletionStore = defineStore("completion", () => {
+  const goalComplete = ref(false);
+  function setGoalCompletion(completionStatus: boolean) {
+    goalComplete.value = completionStatus;
+  }
+  return { goalComplete, setGoalCompletion };
 });

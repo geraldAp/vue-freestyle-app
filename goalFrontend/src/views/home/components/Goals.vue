@@ -1,34 +1,57 @@
 <script setup lang="ts">
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { goalsData } from './goalData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GoalsComponent from './GoalsComponent.vue';
-import { useQuery } from '@tanstack/vue-query';
+import { useQuery, } from '@tanstack/vue-query';
 import { getGoals } from '@/utils/getters';
+import { ref, watch } from 'vue';
+import { useRoute, useRouter, type LocationQueryValue } from 'vue-router';
 
-const { data: goals, error, isLoading, isError } = useQuery({
-  queryKey: ['goals'],
-  queryFn: getGoals,
+const route = useRoute();
+const router = useRouter();
+
+const getStatus = (status: LocationQueryValue | LocationQueryValue[] | null | undefined): string => {
+  if (Array.isArray(status)) {
+    return status[0] || 'all';
+  }
+  return status ? String(status) : 'all';
+};
+
+const status = ref<string>(getStatus(route.query.status));
+
+const { data: goals, error, isPending, isError, refetch } = useQuery({
+  queryKey: ['goals', status.value],
+  queryFn: () => getGoals(status.value),
 });
 
-console.log(goals)
+watch(
+  () => route.query.status,
+  (newStatus) => {
+    status.value = getStatus(newStatus);
+    refetch();
+  },
+  { immediate: true }
+);
 
+const changeStatus = (newStatus: string) => {
+  router.push({ name: 'home', query: { status: newStatus } });
+};
 </script>
 
 <template>
-    <Tabs default-value="all" class="w-full ">
-        <TabsList class="w-full justify-start rounded-none bg-  mb-5">
-            <TabsTrigger class="tabTrigger " value="all">
+  <Tabs :default-value="status" class="w-full ">
+        <TabsList class="w-full justify-start rounded-none bg-white  mb-5">
+            <TabsTrigger class="tabTrigger " value="all" @click="changeStatus('all')">
                 All
             </TabsTrigger>
-            <TabsTrigger class="tabTrigger " value="inProgress">
+            <TabsTrigger class="tabTrigger " value="inProgress" @click="changeStatus('inProgress')">
                 In Progress
             </TabsTrigger>
-            <TabsTrigger class="tabTrigger" value="complete">
+            <TabsTrigger class="tabTrigger" value="complete"  @click="changeStatus('complete')">
                 Completed
             </TabsTrigger>
         </TabsList>
         <TabsContent value="all">
-            <h2 v-if="isLoading"></h2>
+            <h2 v-if="isPending"></h2>
             <GoalsComponent :goals />
         </TabsContent>
         <TabsContent value="inProgress">

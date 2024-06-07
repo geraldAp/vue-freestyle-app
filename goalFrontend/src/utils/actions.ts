@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from "axios";
 import type { AuthDataResponseType, GoalsType } from "./../types/types";
+import { useAuthStore } from "@/stores/counter";
 import { useToast } from "@/components/ui/toast/use-toast";
 import authFetch from "@/axios";
 
-const { toast } = useToast();
+
 
 export const signUpHandler = async (email: string, password: string) => {
   try {
@@ -25,10 +26,7 @@ export const loginHandler = async (email: string, password: string) => {
   console.log("baseUrl", import.meta.env.VITE_BASE_URL);
 
   try {
-    const res = await axios.post(`http://localhost:8080/api/v1/auth/login`, {
-      email,
-      password,
-    });
+    const res = await axios.post(`http://localhost:8080/api/v1/auth/login`, { email, password });
     console.log("Response", res);
     const { data }: { data: AuthDataResponseType } = res;
     console.log(data);
@@ -37,25 +35,29 @@ export const loginHandler = async (email: string, password: string) => {
     const accessToken = data.accessToken;
 
     console.log(refreshToken, accessToken);
-
-    localStorage.setItem("refresh", JSON.stringify(refreshToken));
+    const authStore = useAuthStore();
+    authStore.setToken(accessToken);
+    
+    localStorage.setItem("refresh", refreshToken);
     console.log("done");
-    localStorage.setItem("access", JSON.stringify(accessToken));
+    localStorage.setItem("access", accessToken);
 
+    const { toast } = useToast();
     toast({
       title: "Login Successful!!",
       description: "You have logged in successfully",
     });
-    return res;
+    return true;
   } catch (error: any) {
+    const { toast } = useToast();
     toast({
       title: "Uh oh! Something went wrong.",
       description: error.message,
       variant: "destructive",
     });
+    return false;
   }
 };
-
 export const refreshAccessToken = async (Token: string): Promise<string> => {
   try {
     const { data } = await axios.post(
@@ -71,7 +73,6 @@ export const refreshAccessToken = async (Token: string): Promise<string> => {
     );
   }
 };
-
 export const createGoal = async (data: GoalsType) => {
   try {
     const res = await authFetch.post("/goals", data);
@@ -80,7 +81,6 @@ export const createGoal = async (data: GoalsType) => {
     console.error(error.response.message);
   }
 };
-
 interface UpdateGoalArgs {
   id: string;
   data?: Partial<GoalsType>;
@@ -115,7 +115,6 @@ export const deleteGoal = async (id: string) => {
 };
 
 // Tasks
-
 export const createTask = async ({
   id,
   task,
@@ -133,7 +132,6 @@ export const createTask = async ({
     throw new Error(error.response?.data?.message || "Error creating goal");
   }
 };
-
 interface EditTaskType {
   goalId: string;
   task: {
@@ -144,7 +142,7 @@ interface EditTaskType {
 }
 export const editTask = async ({ goalId, task, taskId }: EditTaskType) => {
   try {
-    await authFetch.put(`/goals/${goalId}/tasks/${taskId}`, {
+    await authFetch.put(`/goals/${taskId}/task/${goalId}`, {
       name: task.name,
       completed: task.completed,
     });
@@ -157,15 +155,9 @@ export const editTask = async ({ goalId, task, taskId }: EditTaskType) => {
     throw new Error(error.response?.data?.message || "Error updating task");
   }
 };
-export const deleteTask = async ({
-  goalId,
-  taskId,
-}: {
-  goalId: string;
-  taskId: string;
-}) => {
+export const deleteTask = async (taskId: string) => {
   try {
-    await authFetch.delete(`/goals/${goalId}/tasks/${taskId}`);
+    await authFetch.delete(`/goals/${taskId}/task`);
     console.log(`task with: ${taskId} is being deleted `);
   } catch (error: any) {
     console.error(
