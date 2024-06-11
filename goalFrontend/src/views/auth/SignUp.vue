@@ -9,9 +9,9 @@ import { signUpHandler } from '@/utils/actions';
 const { toast } = useToast();
 
 const router = useRouter();
-const handleSignUp = async (email: string, password: string) => {
+const handleSignUp = async (firstName:string,lastName:string,userName:string,email: string, password: string) => {
     console.log('Going there', email, password)
-    const res = await signUpHandler(email, password)
+    const res = await signUpHandler(firstName,lastName,userName,email, password)
 
     if (res) {
         toast({

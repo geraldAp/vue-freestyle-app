@@ -1,22 +1,24 @@
 const User = require("../model/user");
 const RefreshToken = require("../model/refreshToken");
-const validateUserCredentials = require("../helpers/validators");
+const { validateUserLoginCredentials } = require("../helpers/validators");
 const { comparePassword } = require("../helpers/passwordHelpers");
 const {
   generateRefreshToken,
   generateAccessToken,
 } = require("../helpers/generateTokens");
-const { use } = require("../routes/authRoute");
 const handleLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { userName, password } = req.body;
 
     // Validation
-    const { email: validatedEmail, password: validatedPassword } =
-      validateUserCredentials(email, password);
-    if (validatedEmail.error) {
-      console.error("Email validation error:", validatedEmail.error.message);
-      throw new Error(validatedEmail.error.message);
+    const { userName: validatedUserName, password: validatedPassword } =
+      validateUserLoginCredentials(userName, password);
+    if (validatedUserName.error) {
+      console.error(
+        "User Name validation error:",
+        validatedUserName.error.message
+      );
+      throw new Error(validatedUserName.error.message);
     }
     if (validatedPassword.error) {
       console.error(
@@ -27,7 +29,7 @@ const handleLogin = async (req, res) => {
     }
 
     // Check if the user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ userName });
     if (!user) {
       return res
         .status(404)
@@ -49,7 +51,12 @@ const handleLogin = async (req, res) => {
 
     const accessToken = generateAccessToken(user._id);
 
-    res.status(200).json({ refreshToken, accessToken, email });
+    const userInfo = {
+      name: user.firstName,
+      email: user.email,
+    };
+
+    res.status(200).json({ refreshToken, accessToken, userInfo });
   } catch (error) {
     console.error("Login error:", error);
     return res.status(400).json({ message: error.message });

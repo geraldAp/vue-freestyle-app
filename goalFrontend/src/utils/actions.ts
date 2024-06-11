@@ -5,15 +5,26 @@ import { useAuthStore } from "@/stores/counter";
 import { useToast } from "@/components/ui/toast/use-toast";
 import authFetch from "@/axios";
 
-
-
-export const signUpHandler = async (email: string, password: string) => {
+export const signUpHandler = async (
+  firstName: string,
+  lastName: string,
+  userName: string,
+  email: string,
+  password: string
+) => {
   try {
     console.log("Attempting to sign up with email:", email); // Debug statement
-    const res = await axios.post("http://localhost:8080/api/v1/auth/sign-up", {
+    const data = {
+      firstName,
+      lastName,
+      userName,
       email,
       password,
-    });
+    };
+    const res = await axios.post(
+      "http://localhost:8080/api/v1/auth/sign-up",
+      data
+    );
 
     console.log("Response from sign-up:", res); // Debug statement
 
@@ -22,11 +33,15 @@ export const signUpHandler = async (email: string, password: string) => {
     console.error("Error during sign-up:", error.response.data.message); // Debug statement
   }
 };
-export const loginHandler = async (email: string, password: string) => {
+
+export const loginHandler = async (userName: string, password: string) => {
   console.log("baseUrl", import.meta.env.VITE_BASE_URL);
 
   try {
-    const res = await axios.post(`http://localhost:8080/api/v1/auth/login`, { email, password });
+    const res = await axios.post(`http://localhost:8080/api/v1/auth/login`, {
+      userName,
+      password,
+    });
     console.log("Response", res);
     const { data }: { data: AuthDataResponseType } = res;
     console.log(data);
@@ -37,7 +52,7 @@ export const loginHandler = async (email: string, password: string) => {
     console.log(refreshToken, accessToken);
     const authStore = useAuthStore();
     authStore.setToken(accessToken);
-    
+
     localStorage.setItem("refresh", refreshToken);
     console.log("done");
     localStorage.setItem("access", accessToken);
@@ -58,6 +73,20 @@ export const loginHandler = async (email: string, password: string) => {
     return false;
   }
 };
+
+
+export const logout = async () => {
+  const refreshToken = localStorage.getItem("refresh") as string;
+  console.log("the logout refresh token:", { refreshToken });
+  const res = await axios.post("http://localhost:8080/api/v1/auth/logout", {
+    refreshToken,
+  });
+  console.log("Logout res:", res.data.message);
+  return res.data.message;
+};
+
+
+
 export const refreshAccessToken = async (Token: string): Promise<string> => {
   try {
     const { data } = await axios.post(
@@ -73,6 +102,8 @@ export const refreshAccessToken = async (Token: string): Promise<string> => {
     );
   }
 };
+
+
 export const createGoal = async (data: GoalsType) => {
   try {
     const res = await authFetch.post("/goals", data);
@@ -81,6 +112,9 @@ export const createGoal = async (data: GoalsType) => {
     console.error(error.response.message);
   }
 };
+
+
+
 interface UpdateGoalArgs {
   id: string;
   data?: Partial<GoalsType>;
@@ -101,6 +135,8 @@ export const updateGoal = async ({
     throw new Error(error.response?.data?.message || "Error updating goal");
   }
 };
+
+
 export const deleteGoal = async (id: string) => {
   try {
     console.log(`deleting goal with ID: ${id}`);
@@ -132,6 +168,8 @@ export const createTask = async ({
     throw new Error(error.response?.data?.message || "Error creating goal");
   }
 };
+
+
 interface EditTaskType {
   goalId: string;
   task: {
@@ -155,6 +193,8 @@ export const editTask = async ({ goalId, task, taskId }: EditTaskType) => {
     throw new Error(error.response?.data?.message || "Error updating task");
   }
 };
+
+
 export const deleteTask = async (taskId: string) => {
   try {
     await authFetch.delete(`/goals/${taskId}/task`);

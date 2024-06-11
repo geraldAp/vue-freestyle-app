@@ -1,5 +1,6 @@
 const Goal = require("../model/goals");
 const Task = require("../model/task");
+
 const getAllGoals = async (req, res) => {
   console.log("getting goal");
   let { page, limit , status } = req.query;
@@ -35,7 +36,6 @@ const getGoal = async (req, res) => {
     console.error(error);
   }
 };
-
 const createGoal = async (req, res) => {
   try {
     const { name, priority, miniDescription, description } = req.body;
@@ -112,7 +112,6 @@ const deleteGoal = async (req, res) => {
     console.error(error);
   }
 };
-
 const deleteAllGoals = async (req, res) => {
   try {
     // Use deleteMany to delete all documents from the Goal collection
@@ -126,6 +125,7 @@ const deleteAllGoals = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 module.exports = {
   getAllGoals,

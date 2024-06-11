@@ -1,7 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { verifyAndRefreshAccessToken } from "@/utils/helpers";
-
+import router from "@/router";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     userId: "" as string,
@@ -27,6 +27,7 @@ export const useAuthStore = defineStore("auth", {
       this.token = "";
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
+      router.push({ name: "login" })
     },
     async verifyAndRefreshToken() {
       try {

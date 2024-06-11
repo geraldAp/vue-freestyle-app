@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AuthForm from './components/AuthForm.vue';
+import LoginForm from './components/LoginForm.vue'
 import { RouterLink } from 'vue-router';
 import { loginHandler } from '@/utils/actions';
 import { useRouter } from "vue-router";
@@ -8,9 +9,9 @@ import { useToast } from "@/components/ui/toast/use-toast";
 const { toast } = useToast();
 
 const router = useRouter();
-const handleLogin = async (email: string, password: string) => {
-    console.log('Going there', email, password)
-    const res = await loginHandler(email, password)
+const handleLogin = async (userName: string, password: string) => {
+    console.log('Going there', userName, password)
+    const res = await loginHandler(userName, password)
     console.log(res)
     if (res) {
         toast({
@@ -35,7 +36,7 @@ const text = "Login"
                 </p>
             </div>
             <div class="w-3/6 mx-auto">
-                <AuthForm :button-text="text" @auth-handler="handleLogin" />
+                <LoginForm :button-text="text" @auth-handler="handleLogin" />
             </div>
             <div class="mt-3 text-center">
                 <p class="text-xs text-blue-500">Don't have an account? <span class="underline text-blue-600">
