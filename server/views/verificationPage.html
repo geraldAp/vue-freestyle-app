@@ -1,0 +1,25 @@
+<!-- views/verificationPage.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Verification</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+    h1 { color: #333; }
+    p { color: #666; }
+    button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Email Verification</h1>
+    <p>Please click the button below to verify your email:</p>
+    <form action="/api/verification/verify-email" method="POST">
+      <input type="hidden" name="token" value="{{token}}">
+      <button type="submit">Verify Email</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -5,6 +5,8 @@ const loginController = require("../controller/loginController");
 const signUpController = require("../controller/signupcontroller");
 const logoutController = require("../controller/logoutController");
 const { getAccounts, deleteAccounts } = require("../controller/accounts");
+
+
 router.post("/sign-up", signUpController);
 router.post("/login", loginController);
 router.post("/logout", logoutController);

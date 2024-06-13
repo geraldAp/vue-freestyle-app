@@ -7,6 +7,8 @@ const notFoundHandler = require("./middleware/notFoundHandler");
 const logger = require("./middleware/logger");
 const authRoutes = require("./routes/authRoute");
 const goalRoutes = require("./routes/goalsRoute");
+const verificationRoutes = require("./routes/verificationRoute");
+const resetPasswordRoutes = require('./routes/resetPasswordRoute')
 const app = express();
 
 // general middle wares
@@ -22,7 +24,8 @@ app.use(logger);
 
 // routes
 app.use("/api/v1/auth", authRoutes);
-
+app.use("/api/verification", verificationRoutes);
+app.use('/api/resetPassword',resetPasswordRoutes)
 app.use("/api/v1/goals", goalRoutes);
 
 app.use(notFoundHandler);
