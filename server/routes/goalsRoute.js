@@ -6,13 +6,13 @@ const {
   updateGoal,
   deleteGoal,
   deleteAllGoals, // If needed, add a route for this
-} = require("../controller/goalController");
+} = require("../controller/goals/goalController");
 const {
   getAllTasks,
   createTask,
   deleteTask,
   updateTask,
-} = require("../controller/tasksController");
+} = require("../controller/goals/tasksController");
 const authMiddleWare = require("../middleware/verifyJwt");
 
 const router = express.Router();

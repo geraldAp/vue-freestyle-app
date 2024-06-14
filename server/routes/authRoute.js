@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const refreshController = require("../controller/refreshController");
-const loginController = require("../controller/loginController");
-const signUpController = require("../controller/signupcontroller");
-const logoutController = require("../controller/logoutController");
+const refreshController = require("../controller/auth/refreshController");
+const loginController = require("../controller/auth/loginController");
+const signUpController = require("../controller/auth/signupcontroller");
+const logoutController = require("../controller/auth/logoutController");
 const { getAccounts, deleteAccounts } = require("../controller/accounts");
 
 

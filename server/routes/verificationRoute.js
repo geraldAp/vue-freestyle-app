@@ -3,10 +3,10 @@ const router = express.Router();
 const {
   getVerificationEmailPage,
   verifyEmail,
-} = require("../controller/verifyEmailController");
+} = require("../controller/email-verification/verifyEmailController");
 const {
   resendVerificationEmail,
-} = require("../controller/resendVerificationEmail");
+} = require("../controller/email-verification/resendVerificationEmail");
 
 router.route("/verify-email").get(getVerificationEmailPage).post(verifyEmail);
 router.post("/resend-verification-email", resendVerificationEmail);
