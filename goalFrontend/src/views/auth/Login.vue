@@ -4,9 +4,7 @@ import LoginForm from './components/LoginForm.vue'
 import { RouterLink } from 'vue-router';
 import { loginHandler } from '@/utils/actions';
 import { useRouter } from "vue-router";
-import { useToast } from "@/components/ui/toast/use-toast";
-
-const { toast } = useToast();
+import { toast } from 'vue-sonner'
 
 const router = useRouter();
 const handleLogin = async (userName: string, password: string) => {
@@ -14,11 +12,12 @@ const handleLogin = async (userName: string, password: string) => {
     const res = await loginHandler(userName, password)
     console.log(res)
     if (res) {
-        toast({
-            title: "Login Successful!!",
-            description: 'You have logged in successfully',
-        });
-        router.push('/home')
+        toast.success('Login successful', {
+            duration: 3000
+        })
+        setTimeout(() => {
+            router.push('/home')
+        }, 2000)
     }
 }
 

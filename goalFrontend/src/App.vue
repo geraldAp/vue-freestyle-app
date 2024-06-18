@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import { Toaster } from '@/components/ui/sonner'
 import Navbar from './components/ui/Navbar.vue';
 </script>
 
@@ -10,6 +11,7 @@ import Navbar from './components/ui/Navbar.vue';
   <div class="w-[80%] mx-auto">
     <RouterView />
   </div>
+  <Toaster position="top-center" />
 </template>
 
 <style scoped></style>

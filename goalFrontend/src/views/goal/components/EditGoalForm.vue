@@ -44,7 +44,7 @@ const formSchema = toTypedSchema(z.object({
     description: z.string().min(2).max(100)
 }))
 
-const { handleSubmit } = useForm({
+const { handleSubmit, resetForm } = useForm({
     validationSchema: formSchema,
     initialValues: {
         goalName: props?.goal?.name,
@@ -62,6 +62,7 @@ const onSubmit = handleSubmit((values) => {
         description: values.description
     }
     emit('goal-handler', data)
+    resetForm()
     emit('close-form')
 })
 </script>

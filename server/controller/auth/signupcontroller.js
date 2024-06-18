@@ -1,11 +1,11 @@
 const fs = require("fs");
 const path = require("path");
-const User = require("../model/user");
-const Verification = require("../model/verification");
+const User = require("../../model/user");
+const Verification = require("../../model/verification");
 const jwt = require("jsonwebtoken");
-const { validateUserSignUpCredentials } = require("../helpers/validators");
-const { encryptPassword } = require("../helpers/passwordHelpers");
-const { transporter } = require("../helpers/transporter");
+const { validateUserSignUpCredentials } = require("../../helpers/validators");
+const { encryptPassword } = require("../../helpers/passwordHelpers");
+const { transporter } = require("../../helpers/transporter");
 const signUp = async (req, res) => {
   try {
     const { firstName, lastName, userName, email, password } = req.body;
@@ -102,7 +102,7 @@ const signUp = async (req, res) => {
 
     const filePath = path.join(
       __dirname,
-      "../views/verificationEmailTemplate.html"
+      "../../views/verificationEmailTemplate.html"
     );
 
     const verificationLink = `http://localhost:8080/api/verification/verify-email?token=${verificationToken}`;

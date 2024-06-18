@@ -29,6 +29,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path:"/profile",
+      name:'profile',
+      component: ()=> import("../views/profile/Profile.vue")
+    }
+    ,
+    {
       path: "/:pathMatch(.*)*", // Catch-all route for undefined paths
       name: "not-found",
       component: NotFound404

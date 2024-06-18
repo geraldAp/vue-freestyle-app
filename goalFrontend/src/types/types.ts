@@ -12,9 +12,15 @@ export type GoalsType = {
   description?: string;
   isComplete?: boolean;
 };
+export type UserInfo = {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  email: string;
+};
 export type AuthDataResponseType = {
   message: string;
   refreshToken: string;
   accessToken: string;
-  email: string;
+  userInfo: UserInfo;
 };

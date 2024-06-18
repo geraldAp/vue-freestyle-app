@@ -1,5 +1,5 @@
-const Goal = require("../model/goals");
-const Task = require("../model/task");
+const Goal = require("../../model/goals");
+const Task = require("../../model/task");
 
 const getAllGoals = async (req, res) => {
   console.log("getting goal");

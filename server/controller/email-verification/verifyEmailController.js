@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-const User = require("../model/user");
+const User = require("../../model/user");
 const jwt = require("jsonwebtoken");
-const Verification = require("../model/verification");
+const Verification = require("../../model/verification");
 
 const getVerificationEmailPage = async (req, res) => {
   const { token } = req.query;
@@ -11,7 +11,7 @@ const getVerificationEmailPage = async (req, res) => {
   try {
     jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
     console.log("Current Directory: ", __dirname);
-    const filePath = path.join(__dirname, "../views/verificationPage.html");
+    const filePath = path.join(__dirname, "../../views/verificationPage.html");
     console.log(filePath);
     fs.readFile(filePath, "utf8", (err, html) => {
       if (err) {
@@ -53,7 +53,7 @@ const verifyEmail = async (req, res) => {
     console.log("Email verified successfully");
     const filePath = path.join(
       __dirname,
-      "../views/verificationSuccessPage.html"
+      "../../views/verificationSuccessPage.html"
     );
     fs.readFile(filePath, "utf8", (err, html) => {
       if (err) {

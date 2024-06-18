@@ -25,7 +25,7 @@ app.use(logger);
 // routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/verification", verificationRoutes);
-app.use('/api/resetPassword',resetPasswordRoutes)
+app.use('/api/v1/resetPassword',resetPasswordRoutes)
 app.use("/api/v1/goals", goalRoutes);
 
 app.use(notFoundHandler);

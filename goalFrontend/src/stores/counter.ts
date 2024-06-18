@@ -2,11 +2,24 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { verifyAndRefreshAccessToken } from "@/utils/helpers";
 import router from "@/router";
+import type { UserInfo } from "@/types/types";
+
+function getUserData(): UserInfo | null {
+  const userDataString = localStorage.getItem("userData");
+  return userDataString ? (JSON.parse(userDataString) as UserInfo) : null;
+}
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     userId: "" as string,
     goalId: "" as string,
-    token: localStorage.getItem("access") as string || "" as string,
+
+    token: (localStorage.getItem("access") as string) || ("" as string),
+    userInfo: getUserData() || {
+      firstName: "",
+      lastName: "",
+      userName: "",
+      email: "",
+    },
   }),
   getters: {
     isAuthenticated: (state) => !!state.token,
@@ -14,6 +27,9 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     setUserId(id: string) {
       this.userId = id;
+    },
+    setUserInfo(userData: UserInfo) {
+      this.userInfo = { ...userData };
     },
     setGoalId(id: string) {
       this.goalId = id;
@@ -27,7 +43,7 @@ export const useAuthStore = defineStore("auth", {
       this.token = "";
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
-      router.push({ name: "login" })
+      router.push({ name: "login" });
     },
     async verifyAndRefreshToken() {
       try {

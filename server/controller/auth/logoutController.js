@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const RefreshToken = require("../model/refreshToken");
+const RefreshToken = require("../../model/refreshToken");
 const handleLogout = async (req, res) => {
   try {
     const { refreshToken } = req.body;

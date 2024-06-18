@@ -1,9 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const User = require("../model/user");
-const Verification = require("../model/user");
+const User = require("../../model/user");
+const Verification = require("../../model/user");
 const jwt = require("jsonwebtoken");
-const { transporter } = require("../helpers/transporter");
+const { transporter } = require("../../helpers/transporter");
 
 const resendVerificationEmail = async (req, res) => {
   const { email } = req.body;
@@ -19,7 +19,7 @@ const resendVerificationEmail = async (req, res) => {
     }
     const filePath = path.join(
       __dirname,
-      "../views/verificationEmailTemplate.html"
+      "../../views/verificationEmailTemplate.html"
     );
 
     if (err) {

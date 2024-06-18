@@ -52,28 +52,18 @@ export const loginHandler = async (userName: string, password: string) => {
     console.log(refreshToken, accessToken);
     const authStore = useAuthStore();
     authStore.setToken(accessToken);
-
+    authStore.setUserInfo(data.userInfo);
+    const userData = JSON.stringify(data.userInfo);
+    localStorage.setItem("userData", userData);
     localStorage.setItem("refresh", refreshToken);
+
     console.log("done");
     localStorage.setItem("access", accessToken);
-
-    const { toast } = useToast();
-    toast({
-      title: "Login Successful!!",
-      description: "You have logged in successfully",
-    });
     return true;
   } catch (error: any) {
-    const { toast } = useToast();
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: error.message,
-      variant: "destructive",
-    });
     return false;
   }
 };
-
 
 export const logout = async () => {
   const refreshToken = localStorage.getItem("refresh") as string;
@@ -84,8 +74,6 @@ export const logout = async () => {
   console.log("Logout res:", res.data.message);
   return res.data.message;
 };
-
-
 
 export const refreshAccessToken = async (Token: string): Promise<string> => {
   try {
@@ -103,7 +91,6 @@ export const refreshAccessToken = async (Token: string): Promise<string> => {
   }
 };
 
-
 export const createGoal = async (data: GoalsType) => {
   try {
     const res = await authFetch.post("/goals", data);
@@ -112,8 +99,6 @@ export const createGoal = async (data: GoalsType) => {
     console.error(error.response.message);
   }
 };
-
-
 
 interface UpdateGoalArgs {
   id: string;
@@ -136,7 +121,6 @@ export const updateGoal = async ({
   }
 };
 
-
 export const deleteGoal = async (id: string) => {
   try {
     console.log(`deleting goal with ID: ${id}`);
@@ -149,7 +133,6 @@ export const deleteGoal = async (id: string) => {
     throw new Error(error.response?.data?.message || "Error deleting goal");
   }
 };
-
 // Tasks
 export const createTask = async ({
   id,
@@ -168,8 +151,6 @@ export const createTask = async ({
     throw new Error(error.response?.data?.message || "Error creating goal");
   }
 };
-
-
 interface EditTaskType {
   goalId: string;
   task: {
@@ -194,7 +175,6 @@ export const editTask = async ({ goalId, task, taskId }: EditTaskType) => {
   }
 };
 
-
 export const deleteTask = async (taskId: string) => {
   try {
     await authFetch.delete(`/goals/${taskId}/task`);
@@ -207,3 +187,22 @@ export const deleteTask = async (taskId: string) => {
     throw new Error(error.response?.data?.message || "Error deleting task");
   }
 };
+
+interface PasswordUpdateData {
+  email: string;
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const updatePassword = async (data: PasswordUpdateData) => {
+  try {
+    const res = await authFetch.put("/resetPassword/change-password", data);
+    console.log("Response from updatePassword:", res);
+    return { success: true, res };
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message;
+    console.error("Error updating task:", errorMessage);
+    return { success: false, error: errorMessage };
+  }
+};
+

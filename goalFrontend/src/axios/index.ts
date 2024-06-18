@@ -2,6 +2,7 @@ import axios from "axios";
 import { verifyAndRefreshAccessToken } from "@/utils/helpers";
 import { useAuthStore } from "@/stores/counter";
 import router from "@/router";
+
 const authFetch = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
 });
@@ -16,7 +17,7 @@ authFetch.interceptors.request.use(
       const authStore = useAuthStore();
       let accessToken = authStore.token;
       if (accessToken) {
-        console.log("verifying access token ");
+        console.log("verifying access token");
         accessToken = await verifyAndRefreshAccessToken(accessToken);
         authStore.setToken(accessToken);
         if (request && request.headers) {
@@ -41,11 +42,12 @@ authFetch.interceptors.request.use(
 
 authFetch.interceptors.response.use(
   (response) => {
+    console.log("Response received in interceptor:", response);
     return response;
   },
   async (error) => {
     const authStore = useAuthStore();
-    console.log("Response error:", error.response);
+    console.log("Response error in interceptor:", error.response);
     if (error.response && error.response.status === 401) {
       console.log("Unauthorized access - possibly due to expired token");
       // Attempt to refresh the token
@@ -65,6 +67,9 @@ authFetch.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+
+    // Ensure error is propagated correctly
+    return Promise.reject(error);
   }
 );
 

@@ -42,14 +42,14 @@ const formSchema = toTypedSchema(z.object({
     })
 }))
 
-const { handleSubmit } = useForm({
+const { handleSubmit,resetForm } = useForm({
     validationSchema: formSchema,
 })
 
 const onSubmit = handleSubmit((values) => {
 
     emit('auth-handler', values.firstName, values.lastName, values.userName, values.email, values.password)
-
+resetForm()
     console.log('Logged in', values)
 })
 

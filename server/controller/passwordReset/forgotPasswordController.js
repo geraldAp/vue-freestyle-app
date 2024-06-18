@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../model/user');
-const { transporter } = require('../helpers/transporter');
+const User = require('../../model/user');
+const { transporter } = require('../../helpers/transporter');
 
 const ResetPasswordLink = async (req, res) => {
   const { email } = req.body;

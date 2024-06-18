@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input'
 
 
 const emit = defineEmits([
-    'goal-handler','close-form'
+    'goal-handler', 'close-form'
 ])
 const formSchema = toTypedSchema(z.object({
     goalName: z.string().min(2).max(50, {
@@ -38,7 +38,7 @@ const formSchema = toTypedSchema(z.object({
 
 
 
-const { handleSubmit } = useForm({
+const { handleSubmit, resetForm } = useForm({
     validationSchema: formSchema,
 })
 
@@ -51,7 +51,9 @@ const onSubmit = handleSubmit((values) => {
         description: values.description
     }
     emit('goal-handler', data)
+    resetForm()
     emit('close-form')
+
     console.log('Emitted')
 })
 </script>

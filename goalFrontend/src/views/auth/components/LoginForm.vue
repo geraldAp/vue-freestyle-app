@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { h } from 'vue'
 import { useForm } from 'vee-validate'
@@ -34,13 +33,13 @@ const formSchema = toTypedSchema(z.object({
     })
 }))
 
-const { handleSubmit } = useForm({
+const { handleSubmit, resetForm } = useForm({
     validationSchema: formSchema,
 })
 
 const onSubmit = handleSubmit((values) => {
     emit('auth-handler', values.userName, values.password)
-
+    resetForm()
     console.log('Logged in', values)
 })
 </script>
