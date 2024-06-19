@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/popover'
 import { useAuthStore } from '@/stores/counter';
 import { logout } from '@/utils/actions';
+import LogoutButton from './LogoutButton.vue';
 const authStore = useAuthStore()
 
 const logoutHandler = () => {
@@ -15,9 +16,6 @@ const logoutHandler = () => {
     authStore.clearAuth()
 }
 </script>
-
-
-
 
 <template>
     <nav class="flex w-full justify-between">
@@ -27,16 +25,15 @@ const logoutHandler = () => {
                     <Hourglass class="size-6" /> <span class="font-semibold text-xl">Life Tracker </span>
                 </h1>
             </RouterLink>
-            <div>
+            <div v-if="authStore.isAuthenticated">
                 <Popover class="mr-8">
                     <PopoverTrigger>
-                        <CircleUserRound v-if="authStore.isAuthenticated" />
+                        <CircleUserRound />
                     </PopoverTrigger>
                     <PopoverContent class="w-36 mr-8 p-2">
                         <ul class="flex flex-col gap-1">
-                            <li @click="logoutHandler"
-                                class="hover:bg-neutral-100 cursor-pointer duration-200 ease-in p-1 rounded font-medium text-sm flex items-center gap-3">
-                                <LogOut class=" size-5" /> <span>Logout</span>
+                            <li class="">
+                                <LogoutButton @logout-emit="logoutHandler" />
                             </li>
                             <li
                                 class="hover:bg-neutral-100 cursor-pointer duration-200 ease-in rounded font-medium text-sm p-1 flex items-center gap-3">
