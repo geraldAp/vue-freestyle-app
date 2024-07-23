@@ -1,20 +1,21 @@
 const Goal = require("../../model/goals");
 const Task = require("../../model/task");
-
+const cloudinary = require('../../configs/cloudinaryConfig')
+const fs = require('fs');
 const getAllGoals = async (req, res) => {
   console.log("getting goal");
-  let { page, limit , status } = req.query;
+  let { page, limit, status } = req.query;
   if (!page) page = 1;
   if (!limit) limit = 10;
   const skip = (page - 1) * 10;
 
-const query = {userId: req.user}
+  const query = { userId: req.user };
 
-if(status === "complete" ){
-  query.isComplete = true 
-}else if (status === "inProgress"){
-  query.isComplete = false
-}
+  if (status === "complete") {
+    query.isComplete = true;
+  } else if (status === "inProgress") {
+    query.isComplete = false;
+  }
 
   try {
     const goals = await Goal.find(query).skip(skip).limit(limit);
@@ -49,13 +50,22 @@ const createGoal = async (req, res) => {
     } else {
       console.log("user id exists", userId);
     }
-    const goal = await Goal.create({
+    let imageUrl = null;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      imageUrl = result.secure_url; // Get the URL of the uploaded image
+      // Delete the temporary file after upload
+      fs.unlinkSync(req.file.path);
+    }
+    const goalData = {
       name,
       priority,
       miniDescription,
       description,
       userId,
-    });
+      coverImage: imageUrl, // Include the image URL
+    };
+    const goal = await Goal.create(goalData);
     res.status(200).json(goal);
   } catch (error) {
     console.error(error);
@@ -125,7 +135,6 @@ const deleteAllGoals = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 module.exports = {
   getAllGoals,

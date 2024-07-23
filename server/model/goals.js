@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-
 const goalSchema = Schema(
   {
     name: {
@@ -19,6 +18,9 @@ const goalSchema = Schema(
     priority: {
       type: String,
       required: { type: String, default: "medium" },
+    },
+    coverImage: {
+      type: String,
     },
     userId: {
       type: String,
